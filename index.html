@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mid Exam Histology Result (30)</title>
+<style>
+  body{font-family:Arial, sans-serif;background:#f7f7f7;margin:0;padding:20px;}
+  .box{max-width:520px;margin:auto;background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+  h1{font-size:18px;margin:0 0 10px;color:#1e3a8a;text-align:center;}
+  .sub{font-size:13px;color:#64748b;text-align:center;margin-bottom:12px;}
+  input{width:100%;padding:12px;font-size:16px;border:1px solid #d1d5db;border-radius:10px;outline:none;}
+  input:focus{border-color:#1e3a8a;}
+  button{margin-top:10px;width:100%;padding:12px;font-size:16px;border:0;border-radius:10px;background:#1e3a8a;color:#fff;cursor:pointer;}
+  button:active{transform:translateY(1px);}
+  .result{margin-top:14px;padding:12px;border-radius:10px;background:#f1f5f9;border:1px solid #e2e8f0;}
+  .error{margin-top:10px;color:#b91c1c;}
+  .row{margin:6px 0;}
+  .label{font-weight:700;}
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>Mid Exam Histology Result (30)</h1>
+    <div class="sub">Enter your ID No. to view your result</div>
+
+    <input id="sid" placeholder="ID No." inputmode="numeric" autocomplete="off" />
+    <button id="btn">View Result</button>
+
+    <div id="msg" class="error" style="display:none;"></div>
+    <div id="out" class="result" style="display:none;"></div>
+  </div>
+
+<script>
+let DATA = null;
+
+async function loadData(){
+  const res = await fetch("results.json", { cache: "no-store" });
+  if(!res.ok) throw new Error("Could not load results.json");
+  DATA = await res.json();
+}
+
+function showError(text){
+  const msg = document.getElementById("msg");
+  msg.textContent = text;
+  msg.style.display = "block";
+  document.getElementById("out").style.display = "none";
+}
+
+function showResult(rec){
+  document.getElementById("msg").style.display = "none";
+  const out = document.getElementById("out");
+  out.style.display = "block";
+  out.innerHTML = `
+    <div class="row"><span class="label">Name:</span> <span dir="auto">${rec.name}</span></div>
+    <div class="row"><span class="label">Result:</span> ${rec.result}</div>
+  `;
+}
+
+async function lookup(){
+  try{
+    if(!DATA) await loadData();
+
+    const id = document.getElementById("sid").value.trim();
+    if(!id) return showError("Please enter your ID No.");
+
+    const rec = DATA[id];
+    if(!rec) return showError("ID not found. Please check and try again.");
+
+    showResult(rec);
+  }catch(e){
+    console.error(e);
+    showError("System error loading results. Please contact the course admin.");
+  }
+}
+
+document.getElementById("btn").addEventListener("click", lookup);
+document.getElementById("sid").addEventListener("keydown", (e) => {
+  if(e.key === "Enter") lookup();
+});
+</script>
+</body>
+</html>
