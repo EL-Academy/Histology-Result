@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mid Exam  Result (30)</title>
+<title>id Exam Histology Result (30)</title>
 <style>
   body{font-family:Arial, sans-serif;background:#f7f7f7;margin:0;padding:20px;}
   .box{max-width:520px;margin:auto;background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);}
@@ -22,9 +22,19 @@
 <body>
   <div class="box">
     <h1>Mid Exam Histology Result (30)</h1>
-    <div class="sub">Enter your ID No. to view your result</div>
+    <div class="sub">Enter your password to view your result</div>
 
-    <input id="sid" placeholder="ID No." inputmode="numeric" autocomplete="off" />
+    <!-- UPDATED: password + alphanumeric keyboard on mobile -->
+    <input
+      id="sid"
+      type="password"
+      placeholder="Enter your password"
+      inputmode="text"
+      autocomplete="off"
+      autocapitalize="none"
+      spellcheck="false"
+    />
+
     <button id="btn">View Result</button>
 
     <div id="msg" class="error" style="display:none;"></div>
@@ -61,11 +71,13 @@ async function lookup(){
   try{
     if(!DATA) await loadData();
 
-    const id = document.getElementById("sid").value.trim();
-    if(!id) return showError("Please enter your ID No.");
+    const pw = document.getElementById("sid").value.trim();
+    if(!pw) return showError("Please enter your password.");
 
-    const rec = DATA[id];
-    if(!rec) return showError("ID not found. Please check and try again.");
+    // NOTE: This assumes your results.json is keyed by password (instead of ID).
+    // Example: { "Abc123": { "name": "Student", "result": "..." } }
+    const rec = DATA[pw];
+    if(!rec) return showError("Password not found. Please check and try again.");
 
     showResult(rec);
   }catch(e){
